@@ -47,6 +47,18 @@
     display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   }
   .epic-header .name { font-size: 15.5px; font-weight: 700; color: var(--purple); }
+
+  .goal-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-left: 4px solid var(--blue); border-radius: 12px;
+    margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    padding: 14px 20px;
+  }
+  .goal-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .goal-header .goal-badge { font-size: 12px; background: #ede9fe; color: #6d28d9; border-radius: 6px; padding: 2px 10px; }
+  .goal-header .goal-name { font-size: 15.5px; font-weight: 700; color: var(--ink); }
+  .goal-desc { font-size: 13px; color: var(--muted); margin-top: 6px; padding-left: 4px; }
+
   .epic-header .epic-badge { font-size: 11px; background: #ede9fe; color: #6d28d9; border-radius: 6px; padding: 2px 8px; }
 
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -115,7 +127,7 @@
 
 <header>
   <h1>GEO Jira Ticket 总表</h1>
-  <div class="meta">2026-08-18 ｜ 2 Epic · 7 Ticket · 3 关联工单 · 状态口径自 Jira 字段同步 · 📊 P0×1 / P1×8 / P2×2 · 🔗 <a href="https://visable.atlassian.net/browse/UC-127" target="_blank" style="color:#6d28d9">UC-127</a> · <a href="https://visable.atlassian.net/browse/UC-398" target="_blank" style="color:#6d28d9">UC-398</a> · 数据源：Jira</div>
+  <div class="meta">2026-08-18 ｜ 1 业务目标 · 2 Epic · 7 Ticket · 2 关联工单 · 状态口径自 Jira 字段同步 · 📊 P0×1 / P1×8 / P2×2 · 🔗 <a href="https://visable.atlassian.net/browse/UC-127" target="_blank" style="color:#6d28d9">UC-127</a> · <a href="https://visable.atlassian.net/browse/UC-398" target="_blank" style="color:#6d28d9">UC-398</a> · 数据源：Jira</div>
   
 
 <div class="rule-box">
@@ -127,13 +139,22 @@
   ⑤ 状态语义：<b>业务推进中</b> = Dependency Status=<b>In Progress</b> + Scope=<b>Self</b>（业务侧推进）；<b>To Be Scheduled</b> = 已 ready 待技术排期（Scope 改 <b>Dev</b> 技术接手）；<b>Review</b> = 评审中
 </div>
 
+<!-- ===== 业务目标 ===== -->
+<div class="goal-card">
+  <div class="goal-header">
+    <span class="goal-badge">🎯 业务目标</span>
+    <a href="https://visable.atlassian.net/browse/UC-106" target="_blank" class="ticket-link">UC-106</a>
+    <span class="goal-name">GEO — FY27 Goal</span>
+  </div>
+  <div class="goal-desc">GEO FY27 Goal：AB2 日均 18、引用/提及 +80%、UV→AB +90%、AB→AB2 +100%；保持 UC-104 父级</div>
+</div>
+
 <!-- ===== Epic 1 ===== -->
 <div class="epic-card">
   <div class="epic-header"><span class="epic-badge">Epic 1</span><a href="https://visable.atlassian.net/browse/UC-127" target="_blank" class="epic-link"><span class="name">🔭 GEO Data Foundation &amp; Infrastructure</span></a></div>
   <table>
     <thead><tr><th style="width:140px">Ticket</th><th style="width:300px">标题</th><th style="width:60px">优先级</th><th style="width:150px">状态（更新后）</th><th style="width:96px">Dependency<br>Scope</th><th>说明</th></tr></thead>
     <tbody>
-      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-106" target="_blank">UC-106</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-106" target="_blank">GEO — FY27 Goal</a></td><td><span class="pri pri-p1">P1</span></td><td><span class="status-tag st-triage">Triage</span></td><td>—</td><td>GEO FY27 Goal：AB2 日均 18、引用/提及 +80%、UV→AB +90%、AB→AB2 +100%；保持 UC-104 父级</td></tr>
       <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-399" target="_blank">UC-399</a></td><td class="en"><a class="title-link" href="https://visable.atlassian.net/browse/UC-399" target="_blank">[GEO] Semrush Enterprise AIO Rollout: Prompt Allocation &amp; Project Creation</a></td><td><span class="pri pri-p0">P0</span></td><td><span class="status-tag st-prd">业务推进中</span></td><td><span class="status-tag st-self">PM</span></td><td>8/3 已打款；1500 prompts / 10 project（每 project ~300，LLM=ChatGPT）；待 prompts 筛选整合 + project 创建 + <b>数据洞察报告</b>（模板已发）；<b>业务推进中</b>（DepStatus=In Progress + Scope=PM），ready 后转 To Be Scheduled</td></tr>
       <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-405" target="_blank">UC-405</a></td><td class="en"><a class="title-link" href="https://visable.atlassian.net/browse/UC-405" target="_blank">[GEO] Define GEO Drill-down Metrics &amp; Business Logic (BI &amp; Backend Alignment)</a></td><td><span class="pri pri-p1">P1</span></td><td><span class="status-tag st-prd">业务推进中</span></td><td><span class="status-tag st-self">PM</span></td><td>GEO 下钻业务口径梳理；@BI 凯亮 @后端 Harry；参考阿里国际站字段（FBI 看板）；产出指标字典 + 下钻业务逻辑说明，支撑过程指标日报与 UC-127 数据底座</td></tr>
       
@@ -163,9 +184,10 @@
 <!-- ===== 汇总 ===== -->
 <h2 class="section-title">📋 总览</h2>
 <div class="summary-grid">
+  <div class="summary-card"><div class="num">1</div><div class="lbl">🎯 业务目标（UC-106）</div></div>
   <div class="summary-card"><div class="num">2</div><div class="lbl">🏗 Epic（GEO Data Foundation &amp; Infrastructure / GEO Content · Social Media · PR Execution）</div></div>
   <div class="summary-card"><div class="num">7</div><div class="lbl">🎫 Ticket（UC-399~405）</div></div>
-  <div class="summary-card"><div class="num">3</div><div class="lbl">🔗 关联工单（UC-106 / ARISE-1021 / ARISE-1154）</div></div>
+  <div class="summary-card"><div class="num">3</div><div class="lbl">🔗 关联工单（ARISE-1021 / ARISE-1154）</div></div>
   <div class="summary-card"><div class="num" style="color:var(--purple)">7</div><div class="lbl">🔄 业务推进中（PM + In Progress）</div></div>
 
   <div class="summary-card"><div class="num" style="color:var(--red)">1</div><div class="lbl">📊 P0 高优（Semrush AIO）</div></div>
