@@ -26,6 +26,7 @@
   .tag.green { background: var(--green-bg); color: var(--green); }
   .tag.purple { background: var(--purple-bg); color: var(--purple); }
   .tag.amber { background: var(--amber-bg); color: var(--amber); }
+  .tag.teal { background: var(--teal-bg); color: var(--teal); }
   table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0 4px; }
   th, td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; vertical-align: top; }
   th { background: #fafafa; font-weight: 600; white-space: nowrap; }
@@ -43,7 +44,7 @@
 <div class="wrap">
   <header>
     <h1>📐 GEO 日报卡片口径说明</h1>
-    <div class="sub">适用：GEO 每日过程指标卡片（Visable GEO 2k计划群 · 工作日 11:00 推送）｜ v2 · 2026-08-26</div>
+    <div class="sub">适用：GEO 每日过程指标卡片（Visable GEO 2k计划群 · 工作日 11:00 推送）｜ v3 · 2026-08-26</div>
   </header>
 
   <div class="card">
@@ -99,8 +100,19 @@
   </div>
 
   <div class="card">
-    <h2><span class="tag blue">记录</span>5. 口径变更记录</h2>
+    <h2><span class="tag teal">观察</span>5. 辅助观察指标：AI Visibility（月度）</h2>
+    <ul>
+      <li><b>AI Visibility（AI 可见度）</b> = 品牌在 AI 引擎（ChatGPT/Gemini/AI Overview/AI Mode）生成结果中的综合可见度评分，<b>0-100 分</b>，综合引用份额 + 推荐位次 + 提及覆盖；类似传统 SEO 的 Visibility Score，但针对 AI 搜索</li>
+      <li><b>更新频率</b>：<b>月度</b>（提及周更、引用日更、Visibility 月更）；按市场国别（如 DE）查看</li>
+      <li><b>指导意义</b>：量升质升 = 优化有效；量升质不升 = 被引用但位次靠后/份额低；用于月度复盘与竞品对比，<b>不进每日卡</b></li>
+      <li><b>实测 08-25（DE 市场）</b>：wlw.de <b>37</b>（3月 39，平稳领先）、europages.de <b>31</b>（3月 26，连续 4 月爬升）、intec-energy.de 21、rsbausysteme.de 14（7月才被收录）</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2><span class="tag blue">记录</span>6. 口径变更记录</h2>
     <ul class="changelog">
+      <li><b>2026-08-26 v3</b> — 新增第 5 节「辅助观察指标：AI Visibility」（月度 0-100 分，DE 市场实测 wlw.de 37 / europages.de 31），不进每日卡，用于月度复盘与竞品对比。</li>
       <li><b>2026-08-26 v2</b> — AI 行补充 7日均（最近 7 天快照平均，08-19~08-25 实测：提及 15,634 / 引用 144,522）；Semrush <code>CBF_country</code> 参数由 WW 改为 Worldwide（WW 已 422）。</li>
       <li><b>2026-08-26 v1</b> — 初始版。AI 粒度修正：此前误标"月度快照"，实测 <b>提及=周更、引用=日更</b>（8-12 与 8-19 相同疑为数据源未发布新快照）；9核心达成率口径修正为各站本国市场。口径有变动时，卡片将随推送说明一次，日常卡片仅保留本页链接。</li>
     </ul>
