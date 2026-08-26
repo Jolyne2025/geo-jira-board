@@ -43,7 +43,7 @@
 <div class="wrap">
   <header>
     <h1>📐 GEO 日报卡片口径说明</h1>
-    <div class="sub">适用：GEO 每日过程指标卡片（Visable GEO 2k计划群 · 工作日 11:00 推送）｜ v1 · 2026-08-26</div>
+    <div class="sub">适用：GEO 每日过程指标卡片（Visable GEO 2k计划群 · 工作日 11:00 推送）｜ v2 · 2026-08-26</div>
   </header>
 
   <div class="card">
@@ -51,6 +51,7 @@
     <ul>
       <li>卡片展示 <b>T-3</b> 最新一日数据：数据管道约 2 天延迟，T-3 口径保证数据完整性（如 08-26 推送展示 08-23 数据）</li>
       <li>所有"当日值"均为 T-3 单日；"7日均" = T-3 往前 7 个自然日的平均值</li>
+      <li>AI 指标以 Semrush 最新数据日为准（如 08-25 推送取 08-25 快照），其 7日均 = 该日前 7 天快照平均</li>
     </ul>
   </div>
 
@@ -74,7 +75,7 @@
       <tr><td><b>UV</b></td><td>2,852</td><td>geo目标0824.xlsx 2027-03 forecast</td></tr>
       <tr><td><b>AB</b></td><td>34</td><td>同上</td></tr>
       <tr><td><b>AB2</b></td><td>18</td><td>≈ 月 500+，即"2k 计划"核心目标</td></tr>
-      <tr><td><b>UV→AB%</b></td><td>1.19%</td><td>目标反推（已超目标时标注 133%* 等超达成标记）</td></tr>
+      <tr><td><b>UV→AB%</b></td><td>1.19%</td><td>目标反推（已超目标时标注 133% 等超达成标记）</td></tr>
       <tr><td><b>AB→AB2%</b></td><td>52.9%</td><td>目标反推；分平台 202703：Desktop 1.45%/42.9%、Mobile 0.93%/69.2%</td></tr>
     </table>
     <div class="note">达成率 = 当前值 ÷ 目标值。</div>
@@ -86,7 +87,8 @@
       <li><b>范围</b>：26 站 WORLDWIDE（wlw.de/at/ch/com + europages 全部国别域名 + europages.com 国际主站）</li>
       <li><b>AI提及（Mentions）</b> = 各模型 mentions 求和 → <b>周度快照</b>（同一周内数值基本不变，跨周更新）；WoW = 本周快照 ÷ 7 天前快照 − 1</li>
       <li><b>AI引用（Cited Pages）</b> = owned_sources 求和 → <b>日度快照</b>（每日更新）；日环比 = ÷ 前一日快照 − 1；WoW = ÷ 7 天前快照 − 1</li>
-      <li><b>数据源</b>：Semrush AIO 站点大盘（element 1b75cb07），浏览器内部 API，0 积分消耗；CBF_latest_date__date 可传任意历史日期取对应快照</li>
+      <li><b>7日均</b> = 最近 7 天快照的平均（如 08-25：提及 15,588、7日均 15,634；引用 144,450、7日均 144,522）</li>
+      <li><b>数据源</b>：Semrush AIO 站点大盘（element 1b75cb07），浏览器内部 API，0 积分消耗；<code>CBF_latest_date__date</code> 可传任意历史日期取对应快照；<code>CBF_country</code> 用 <code>Worldwide</code>（2026-08-26 实测 WW 已不可用）</li>
     </ul>
     <table style="margin-top:10px">
       <tr><th>目标项</th><th>基线（3月）</th><th>×1.8 目标</th><th>08-25 实测</th><th>达成率</th></tr>
@@ -99,6 +101,7 @@
   <div class="card">
     <h2><span class="tag blue">记录</span>5. 口径变更记录</h2>
     <ul class="changelog">
+      <li><b>2026-08-26 v2</b> — AI 行补充 7日均（最近 7 天快照平均，08-19~08-25 实测：提及 15,634 / 引用 144,522）；Semrush <code>CBF_country</code> 参数由 WW 改为 Worldwide（WW 已 422）。</li>
       <li><b>2026-08-26 v1</b> — 初始版。AI 粒度修正：此前误标"月度快照"，实测 <b>提及=周更、引用=日更</b>（8-12 与 8-19 相同疑为数据源未发布新快照）；9核心达成率口径修正为各站本国市场。口径有变动时，卡片将随推送说明一次，日常卡片仅保留本页链接。</li>
     </ul>
   </div>
