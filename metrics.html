@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEO 日报卡片口径说明</title>
+<style>
+  :root { --bg: #f5f6fa; --card: #fff; --ink: #1f2430; --muted: #6b7280; --line: #e5e7eb;
+    --blue: #2563eb; --blue-bg: #eff6ff; --green: #16a34a; --green-bg: #f0fdf4;
+    --red: #dc2626; --red-bg: #fef2f2; --amber: #d97706; --amber-bg: #fffbeb;
+    --purple: #7c3aed; --purple-bg: #f5f3ff; --teal: #0d9488; --teal-bg: #f0fdfa; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6; padding: 28px 16px 60px; }
+  .wrap { max-width: 1000px; margin: 0 auto; }
+  header { background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-radius: 14px;
+    padding: 24px 32px; color: #4c1d95; margin-bottom: 22px; box-shadow: 0 6px 20px rgba(124,58,237,.18); }
+  header h1 { font-size: 24px; margin-bottom: 6px; }
+  header .sub { font-size: 13px; opacity: .85; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px 24px; margin-bottom: 18px; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
+  h2 { font-size: 17px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  h2 .tag { display: inline-block; font-size: 11px; font-weight: 600; border-radius: 4px;
+    padding: 1px 8px; margin-right: 8px; vertical-align: 2px; }
+  .tag.blue { background: var(--blue-bg); color: var(--blue); }
+  .tag.green { background: var(--green-bg); color: var(--green); }
+  .tag.purple { background: var(--purple-bg); color: var(--purple); }
+  .tag.amber { background: var(--amber-bg); color: var(--amber); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0 4px; }
+  th, td { border: 1px solid var(--line); padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: #fafafa; font-weight: 600; white-space: nowrap; }
+  code { background: #f3f4f6; border: 1px solid var(--line); border-radius: 4px;
+    padding: 1px 6px; font-size: 12px; font-family: "SF Mono", Menlo, Consolas, monospace; }
+  .note { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+  ul { padding-left: 20px; font-size: 13.5px; }
+  li { margin-bottom: 6px; }
+  .changelog { font-size: 13px; }
+  .changelog li b { color: var(--purple); }
+  .footer { text-align: center; font-size: 12px; color: var(--muted); margin-top: 28px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📐 GEO 日报卡片口径说明</h1>
+    <div class="sub">适用：GEO 每日过程指标卡片（Visable GEO 2k计划群 · 工作日 11:00 推送）｜ v1 · 2026-08-26</div>
+  </header>
+
+  <div class="card">
+    <h2><span class="tag blue">时效</span>1. 数据时效</h2>
+    <ul>
+      <li>卡片展示 <b>T-3</b> 最新一日数据：数据管道约 2 天延迟，T-3 口径保证数据完整性（如 08-26 推送展示 08-23 数据）</li>
+      <li>所有"当日值"均为 T-3 单日；"7日均" = T-3 往前 7 个自然日的平均值</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2><span class="tag green">漏斗</span>2. 流量漏斗指标（Redash / Redshift）</h2>
+    <table>
+      <tr><th>指标</th><th>定义</th><th>取数口径</th></tr>
+      <tr><td><b>UV</b></td><td>当日去重访客数</td><td><code>metrics_layer.ga_user_metrics</code>，<code>channel='geo'</code>，<code>COUNT(DISTINCT visitor_sk||date)</code></td></tr>
+      <tr><td><b>AB</b></td><td>当日活跃买家数（QDR+RFQ）</td><td><code>active_buyers</code>，<code>channel='geo'</code>，<code>is_ab2=false</code>，<code>COUNT(DISTINCT buyer_id_day_key)</code></td></tr>
+      <tr><td><b>AB2</b></td><td>正连接转化数（买家回复）</td><td><code>active_buyers</code>，<code>channel='geo'</code>，<code>is_ab2=true</code>，<code>COUNT(DISTINCT buyer_id_day_key)</code></td></tr>
+      <tr><td><b>UV→AB%</b></td><td>UV 到 AB 转化率</td><td>AB ÷ UV</td></tr>
+      <tr><td><b>AB→AB2%</b></td><td>AB 到 AB2 转化率</td><td>AB2 ÷ AB</td></tr>
+    </table>
+    <div class="note">WoW = 本周 7 日均 ÷ 上周 7 日均 − 1。channel 取 session 归因；AB2 为 AB 子集，按买家首次回复日归日。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="tag amber">目标</span>3. 财年底目标（FY27 = 2027-03）</h2>
+    <table>
+      <tr><th>指标</th><th>目标（日均）</th><th>说明</th></tr>
+      <tr><td><b>UV</b></td><td>2,852</td><td>geo目标0824.xlsx 2027-03 forecast</td></tr>
+      <tr><td><b>AB</b></td><td>34</td><td>同上</td></tr>
+      <tr><td><b>AB2</b></td><td>18</td><td>≈ 月 500+，即"2k 计划"核心目标</td></tr>
+      <tr><td><b>UV→AB%</b></td><td>1.19%</td><td>目标反推（已超目标时标注 133%* 等超达成标记）</td></tr>
+      <tr><td><b>AB→AB2%</b></td><td>52.9%</td><td>目标反推；分平台 202703：Desktop 1.45%/42.9%、Mobile 0.93%/69.2%</td></tr>
+    </table>
+    <div class="note">达成率 = 当前值 ÷ 目标值。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="tag purple">AI</span>4. AI 提及 / 引用（Semrush）</h2>
+    <ul>
+      <li><b>范围</b>：26 站 WORLDWIDE（wlw.de/at/ch/com + europages 全部国别域名 + europages.com 国际主站）</li>
+      <li><b>AI提及（Mentions）</b> = 各模型 mentions 求和 → <b>周度快照</b>（同一周内数值基本不变，跨周更新）；WoW = 本周快照 ÷ 7 天前快照 − 1</li>
+      <li><b>AI引用（Cited Pages）</b> = owned_sources 求和 → <b>日度快照</b>（每日更新）；日环比 = ÷ 前一日快照 − 1；WoW = ÷ 7 天前快照 − 1</li>
+      <li><b>数据源</b>：Semrush AIO 站点大盘（element 1b75cb07），浏览器内部 API，0 积分消耗；CBF_latest_date__date 可传任意历史日期取对应快照</li>
+    </ul>
+    <table style="margin-top:10px">
+      <tr><th>目标项</th><th>基线（3月）</th><th>×1.8 目标</th><th>08-25 实测</th><th>达成率</th></tr>
+      <tr><td><b>提及</b></td><td>10,870（9核心各站本国市场）</td><td><b>19,566</b></td><td>15,588（WoW -0.5%）</td><td>61%</td></tr>
+      <tr><td><b>引用</b></td><td>175,777（9核心 WORLDWIDE）</td><td><b>316,399</b></td><td>144,450（日环比 -0.7%，WoW +1.1%）</td><td>42%</td></tr>
+    </table>
+    <div class="note">达成率口径：提及按 9 核心站各站本国市场（wlw.com→US、ep.it→IT 等，非"9核心DE"）；引用按 9 核心站 WORLDWIDE。9 核心 = wlw.de/at/ch/com + ep.de/it/fr/co.uk/es。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="tag blue">记录</span>5. 口径变更记录</h2>
+    <ul class="changelog">
+      <li><b>2026-08-26 v1</b> — 初始版。AI 粒度修正：此前误标"月度快照"，实测 <b>提及=周更、引用=日更</b>（8-12 与 8-19 相同疑为数据源未发布新快照）；9核心达成率口径修正为各站本国市场。口径有变动时，卡片将随推送说明一次，日常卡片仅保留本页链接。</li>
+    </ul>
+  </div>
+
+  <div class="footer">GEO 日报口径说明 · 维护：Jolyne · 与 <a href="./">GEO Jira Board</a> 同仓库</div>
+</div>
+</body>
+</html>
