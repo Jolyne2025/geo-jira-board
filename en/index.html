@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEO Jira Ticket Master Table (Public · 2026-09-01)</title>
+<style>
+  :root {
+    --bg: #f5f6fa; --card: #fff; --ink: #1f2430; --muted: #6b7280; --line: #e5e7eb;
+    --blue: #2563eb; --blue-bg: #eff6ff; --green: #16a34a; --green-bg: #f0fdf4;
+    --red: #dc2626; --red-bg: #fef2f2; --amber: #d97706; --amber-bg: #fffbeb;
+    --purple: #7c3aed; --purple-bg: #f5f3ff; --teal: #0d9488; --teal-bg: #f0fdfa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.6; padding: 28px 16px 60px;
+  }
+  .wrap { max-width: 1280px; margin: 0 auto; }
+  header {
+    background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-radius: 14px;
+    padding: 24px 32px; color: #4c1d95; margin-bottom: 22px; box-shadow: 0 6px 20px rgba(124,58,237,.18);
+  }
+  header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; color: #3b0764; }
+  header .meta { font-size: 13px; opacity: .9; color: #6d28d9; }
+
+  .goal-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-left: 4px solid var(--blue); border-radius: 12px;
+    margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    padding: 14px 20px;
+  }
+  .goal-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .goal-header .goal-badge { font-size: 12px; background: #ede9fe; color: #6d28d9; border-radius: 6px; padding: 2px 10px; }
+  .goal-header .goal-name { font-size: 15.5px; font-weight: 700; color: var(--ink); }
+  .goal-desc { font-size: 13px; color: var(--muted); margin-top: 6px; padding-left: 4px; }
+
+  .epic-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    overflow: hidden;
+  }
+  .epic-header {
+    background: #f8fafc; padding: 13px 20px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .epic-header .name { font-size: 15.5px; font-weight: 700; color: var(--purple); }
+  .epic-header .epic-badge { font-size: 11px; background: #ede9fe; color: #6d28d9; border-radius: 6px; padding: 2px 8px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    background: #f1f5f9; color: #475569; font-weight: 600;
+    padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--line);
+    font-size: 12px; white-space: nowrap;
+  }
+  tbody td { padding: 7px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+  tbody tr:hover { background: #fafbfe; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  .ticket-link { color: var(--blue); text-decoration: none; font-weight: 500; }
+  .ticket-link:hover { text-decoration: underline; }
+  .epic-link, .title-link { color: var(--blue); text-decoration: none; font-weight: 500; }
+  .epic-link:hover, .title-link:hover { text-decoration: underline; }
+  .en { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: #6d28d9; }
+  .sub { border-left: 3px solid #c4b5fd; margin-left: 8px; }
+
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; margin: 16px 0; }
+  .summary-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 16px; text-align: center;
+  }
+  .summary-card .num { font-size: 22px; font-weight: 700; color: var(--purple); }
+  .summary-card .lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  h2.section-title {
+    font-size: 17px; font-weight: 700; margin: 28px 0 14px;
+    padding-left: 10px; border-left: 4px solid var(--purple);
+  }
+  .status-tag { display: inline-block; padding: 1px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; }
+  .st-sched { background: var(--amber-bg); color: var(--amber); border: 1px solid #fde68a; }
+  .st-closed { background: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; }
+  .st-prd { background: var(--purple-bg); color: var(--purple); border: 1px solid #ddd6fe; }
+  .st-triage { background: var(--amber-bg); color: var(--amber); border: 1px solid #fde68a; }
+  .pri { display: inline-block; padding: 1px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+  .pri-p0 { background: var(--red-bg); color: var(--red); border: 1px solid #fecaca; }
+  .pri-p1 { background: var(--amber-bg); color: var(--amber); border: 1px solid #fde68a; }
+  .pri-p2 { background: #f3f4f6; color: #64748b; border: 1px solid #e5e7eb; }
+  .foot-note { font-size: 12.5px; color: var(--muted); background: var(--card); border: 1px dashed var(--line); border-radius: 10px; padding: 10px 16px; margin-top: 14px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 24px; }
+  @media (max-width: 760px) { table { font-size: 12px; } td, th { padding: 5px 8px; } }
+  /* ===== 左侧目录 ===== */
+  .toc { position: fixed; left: 16px; top: 16px; bottom: 16px; width: 210px; z-index: 100;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04); padding: 12px 10px 16px; overflow-y: auto;
+    scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+  .toc-title { font-size: 12px; font-weight: 700; color: var(--muted);
+    letter-spacing: .08em; padding: 2px 8px 10px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .toc a { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+    padding: 6px 8px; border-radius: 8px; color: #374151; text-decoration: none;
+    font-size: 12.5px; line-height: 1.45; margin-bottom: 2px; }
+  .toc a:hover { background: #f1f5f9; color: var(--blue); }
+  .toc a.active { background: var(--blue-bg); color: var(--blue); font-weight: 600; }
+  .toc a .tk { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px;
+    color: var(--muted); margin-left: 4px; }
+  .toc-toggle { display: none; position: fixed; left: 14px; top: 14px; z-index: 110;
+    width: 40px; height: 40px; border-radius: 11px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); font-size: 17px; cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,.14); align-items: center; justify-content: center; }
+  @media (min-width: 1260px) { body { padding-left: 242px; } }
+  @media (max-width: 1259px) {
+    .toc { transform: translateX(-120%); transition: transform .22s ease; }
+    .toc.open { transform: none; box-shadow: 0 10px 36px rgba(0,0,0,.22); }
+    .toc-toggle { display: flex; }
+  }
+  @media (max-width: 760px) { .toc { width: 82vw; } }
+  .done-toggle { display: none; position: fixed; right: 14px; top: 14px; z-index: 110;
+    padding: 0 14px; height: 40px; border-radius: 11px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,.14); align-items: center; justify-content: center; white-space: nowrap; }
+  .done-toggle:hover { background: #f1f5f9; }
+  tr.is-done { display: none !important; }
+  @media (max-width: 760px) { .done-toggle { font-size: 12px; padding: 0 10px; } }
+</style>
+</head>
+<body>
+<nav class="toc" id="toc" aria-label="Table of contents">
+  <div class="toc-title">📑 Contents</div>
+  <div id="tocBody"></div>
+</nav>
+<button class="toc-toggle" id="tocToggle" type="button" aria-label="Expand TOC">☰</button>
+<button class="done-toggle" id="doneToggle" type="button" aria-label="Toggle completed tickets">✅ Expand Done</button>
+<div class="wrap">
+
+<header>
+  <h1>GEO Jira Ticket Master Table</h1>
+  <div class="meta">2026-09-01 ｜ 1 Business Goal · 2 Epics · 20 Ticket · 7 Subtask · 2 Dev Tickets · Source: Jira</div>
+</header>
+
+<!-- ===== Business Goal ===== -->
+<div class="goal-card">
+  <div class="goal-header">
+    <span class="goal-badge">🎯 Business Goal</span>
+    <a href="https://visable.atlassian.net/browse/UC-106" target="_blank" class="ticket-link">UC-106</a>
+    <span class="goal-name">GEO — FY27 Goal</span>
+  </div>
+  <div class="goal-desc">GEO FY27 Goal: AB2 daily avg 18, citations/mentions +80%, UV→AB +90%, AB→AB2 +100%; parent: UC-104</div>
+</div>
+
+<!-- ===== Epic 1 ===== -->
+<div class="epic-card">
+  <div class="epic-header"><span class="epic-badge">Epic 1</span><a href="https://visable.atlassian.net/browse/UC-127" target="_blank" class="epic-link"><span class="name">🔭 GEO Data Foundation &amp; Infrastructure</span></a></div>
+  <table>
+    <thead><tr><th style="width:140px">Ticket</th><th style="width:auto">Title</th><th style="width:60px">Priority</th><th style="width:120px">Status (updated)</th><th style="width:96px">Dependency<br>Scope</th><th style="width:130px">Dev Tickets</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-399" target="_blank">UC-399</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-399" target="_blank">[GEO] Semrush Enterprise AIO Rollout: Prompt Allocation &amp; Project Creation</a></td><td><span class="pri pri-p0">P0</span></td><td><span class="status-tag st-prd">In Progress</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>Invoiced on 8/3; 1500 prompts / 10 projects (~300 per project, LLM=ChatGPT)</td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-405" target="_blank">UC-405</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-405" target="_blank">[GEO] Define GEO Drill-down Metrics &amp; Business Logic (BI &amp; Backend Alignment)</a></td><td><span class="pri pri-p1">P1</span></td><td><span class="status-tag st-prd">In Progress</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev"><a class="ticket-link" href="https://visable.atlassian.net/browse/ARISE-1021" target="_blank">ARISE-1021</a></td><td>GEO drill-down metrics &amp; business logic; @BI Kailiang @Backend Harry<br><span class="prog" style="color:#0d9488" data-d="2026-05-25" data-k="ARISE-1021">🔧 ARISE-1021 · 2026-05-25 · Artur: Formula was provided to Torben:-- SEO when ( (regexp_contains(lower(coalesce(source, '')), r'^google$') and regexp_contains(lower(coalesce(medium, '')), r'organic')) or (regexp_contains(lower(coalesce(source, '')), r'^search\.google\.com$') and regexp_contains(lower(coalesce(medium, '')), r'referral</span></td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-494" target="_blank">UC-494</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-494" target="_blank">[GEO] Optimize robots.txt AI Crawler Policy (wlw.de &amp; europages.*) + Quarterly Review</a></td><td><span class="pri pri-p1">P1</span></td><td><span class="status-tag st-prd">In Progress</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev"><a class="ticket-link" href="https://visable.atlassian.net/browse/ARISE-1154" target="_blank">ARISE-1154</a></td><td>wlw.de &amp; europages.* robots.txt AI crawler policy optimization + quick-win QA. Scope=Dev</td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-467" target="_blank">UC-467</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-467" target="_blank">[GEO] Weekly Data Anomaly Analysis (WoW)</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-prd">In Progress</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>Weekly data anomaly analysis (WoW), covering anomaly tracking of GEO channel entry metrics</td></tr>
+      <tr><td class="mono sub"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-529" target="_blank">UC-529</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-529" target="_blank">CW34 GEO: AB2 decline driven by RFQ drop (-15%)</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td></td></tr>
+
+      <tr><td class="mono sub"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-475" target="_blank">UC-475</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-475" target="_blank">CW33 GEO: ChatGPT europages.co.uk static_serp (-41%)</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-prd">In Progress</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>Tracking ChatGPT → europages.co.uk static_serp UV decline (CW33)<br><span class="prog" style="color:#0d9488" data-d="2026-08-20" data-k="UC-475">📝 2026-08-20 · Jolyne: Semrush 官方 v4-raw API 历史数据回填（2026-08-20）：wlw.de 大盘 WORLDWIDE 口径月度快照（每月 19 日取值）2026-01~08 全模型序列已补充至描述 5.1 节——Mentions / Monthly Audience / Cited Pages × 6 模型 + 07→08 MoM。关键发现：8 月 Mentions 4,920（-17.8%）、Audience 345 万（-30.5%）、Cited Pages 80,355（-2.0%）；CHAT_GPT Mentions 自 5 月起持续下行（564→519→506→386）、8 月加</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== Epic 2 ===== -->
+<div class="epic-card">
+  <div class="epic-header"><span class="epic-badge">Epic 2</span><a href="https://visable.atlassian.net/browse/UC-398" target="_blank" class="epic-link"><span class="name">📣 GEO Content · Social Media · PR Execution</span></a></div>
+  <table>
+    <thead><tr><th style="width:140px">Ticket</th><th style="width:auto">Title</th><th style="width:60px">Priority</th><th style="width:120px">Status (updated)</th><th style="width:96px">Dependency<br>Scope</th><th style="width:130px">Dev Tickets</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-400" target="_blank">UC-400</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-400" target="_blank">[GEO] Core Prompt Social Posting: 900 Posts (+2 AB2)</a></td><td><span class="pri pri-p1">P1</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--amber-bg);color:var(--amber);border:1px solid #fde68a;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">External</span></td><td class="dev">-</td><td>@Yuezhi @Donna; 300 core prompts → 900 social posts, citation/mention rate +50%; Scope=External (external resource)</td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-401" target="_blank">UC-401</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-401" target="_blank">[GEO] Blog GEO-ification: 300 Posts per Language × 21 Languages (+0.5 AB2)</a></td><td><span class="pri pri-p1">P1</span></td><td><span class="status-tag st-prd">In Progress</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>@Joyce @Donna; Blog pivots to GEO prompt-driven (original + high-quality machine translation)<br><span class="prog" style="color:#0d9488" data-d="2026-08-24" data-k="UC-401">📝 2026-08-24 · Jolyne: @@Joyce Madbak Hi Joyce,Since AI-generated images can be a bit unpredictable, I found some free stock photo sites for you to try out first, hopefully they can help with the image issue. I put the links under Point 8 – Free Image Resources. Also, I've added some content about meta titles, meta descri</span></td></tr>
+
+      <tr><td class="mono sub"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-518" target="_blank">UC-518</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-518" target="_blank">[GEO][Blog] europages Pre-Production Environment Public Leak &amp; Search Indexing</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td></td></tr>
+      <tr><td class="mono sub"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-519" target="_blank">UC-519</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-519" target="_blank">[GEO][Blog] Page Style Template: Support Hyperlinks in Introduction Section</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td></td></tr>
+      <tr><td class="mono sub"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-520" target="_blank">UC-520</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-520" target="_blank">[GEO][Blog] Multi-Language Blog Translation Workflow</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td></td></tr>
+      <tr><td class="mono sub"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-521" target="_blank">UC-521</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-521" target="_blank">[GEO][Blog] Publishing Requirements</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td></td></tr>
+      <tr><td class="mono sub"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-480" target="_blank">UC-480</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-480" target="_blank">[GEO][Blog] Neos Technical Requirements: Content Features + 21-Language Bulk Publishing</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-prd">In Progress</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>[Blog] Neos technical requirements: content features + 21-language config<br><span class="prog" style="color:#0d9488" data-d="2026-08-21" data-k="UC-480">📝 2026-08-21 · Jolyne: 目前正在评估neos api；已经拿到国际站blog mcp，正在测试</span></td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-403" target="_blank">UC-403</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-403" target="_blank">[GEO] Longtext/Blog Decision-Info Enhancement (AB% +60%, +2 AB2)</a></td><td><span class="pri pri-p1">P1</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>@Yuezhi @Joyce @Donna @Zhichen; review after analysis, then split into sub-tickets</td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-404" target="_blank">UC-404</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-404" target="_blank">[GEO] GEO Structured Data (AB% +25%, +0.5 AB2)</a></td><td><span class="pri pri-p1">P1</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>AB conversion +25%; requires technical review (assess reuse of UC-127 structured data)</td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-182" target="_blank">UC-182</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-182" target="_blank">[GEO]: Brand Name Marketing and PR Backlinks</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>@Theresa @Anna; backlink part linked with SEO "Backlinks Phase 2"</td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-402" target="_blank">UC-402</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-402" target="_blank">[GEO] LinkedIn &amp; Facebook Organic Operation (+0.5 AB2)</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-prd">In Progress</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>@Joyce; official channel volume growth; day-to-day operation<br><span class="prog" style="color:#0d9488" data-d="2026-08-26" data-k="UC-402">📝 2026-08-26 · Joyce: Hi@@Jolyne Zhang, posting will start with the 1st article publication</span></td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-477" target="_blank">UC-477</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-477" target="_blank">[GEO] Enhance static_serp Citation Value for AI Engines (Structured Data + Decision Content)</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-prd">In Progress</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>Enhance static_serp citation value (structured data optimization + Schema.org)</td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-478" target="_blank">UC-478</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-478" target="_blank">[GEO] Benchmark Alibaba International GEO Content Structure (Longtext Decision Content)</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>Benchmark Alibaba International GEO long-form content structure</td></tr>
+      <tr><td class="mono"><a class="ticket-link" href="https://visable.atlassian.net/browse/UC-479" target="_blank">UC-479</a></td><td><a class="title-link" href="https://visable.atlassian.net/browse/UC-479" target="_blank">[GEO] Supplier Ranking &amp; Top-N Ranking Pages (Trust &amp; Relevance Score)</a></td><td><span class="pri pri-p2">P2</span></td><td><span class="status-tag st-sched">To Be Scheduled</span></td><td><span class="status-tag" style="background:var(--gray-bg);color:var(--gray);border:1px solid #e5e7eb;padding:1px 8px;border-radius:6px;font-size:11.5px;font-weight:600">Self</span></td><td class="dev">-</td><td>Supplier ranking &amp; Top-N ranking pages (trust &amp; relevance scoring)<span class="prog" style="color:#0d9488" data-d="2026-08-31" data-k="UC-479">📝 2026-08-31 · Chengcheng: 新增了榜单页的分析报告和SOP操作手册</span><br></td></tr>
+
+
+
+
+</tbody>
+  </table>
+</div>
+
+<!-- ===== Summary ===== -->
+<h2 class="section-title">📋 Summary</h2>
+<div class="summary-grid">
+  <div class="summary-card"><div class="num">1</div><div class="lbl">🎯 Business Goal (UC-106)</div></div>
+  <div class="summary-card"><div class="num">2</div><div class="lbl">🏗 Epics (UC-127 / UC-398)</div></div>
+  <div class="summary-card"><div class="num">20</div><div class="lbl">🎫 Tickets (UC-182/399~405/467/477~479/494)</div></div>
+  <div class="summary-card"><div class="num">2</div><div class="lbl">🔧 Dev Tickets (ARISE-1021 / ARISE-1154)</div></div>
+  <div class="summary-card"><div class="num" style="color:var(--purple)">7</div><div class="lbl">🔄 In Progress (Dep=In Progress)</div></div>
+  <div class="summary-card"><div class="num" style="color:var(--amber)">6</div><div class="lbl">📅 To Be Scheduled (Dep=To Be Scheduled)</div></div>
+  <div class="summary-card"><div class="num" style="color:var(--red)">1</div><div class="lbl">📊 P0 High Priority (Semrush AIO)</div></div>
+</div>
+
+<div class="foot-note"><span class="auto-sync">📌 <b>2026-09-01 auto sync</b>: 1 ticket (incl. linked dev tickets) got new comments; Notes column updated (source: latest Jira comment).</span><br><span class="auto-sync struct-sync">📌 <b>2026-08-31 struct sync</b>: 1 removed (UC-523); field updates 2 (board=geo)</span><br><span class="auto-sync struct-sync">📌 <b>2026-08-28 struct sync</b>: 1 added (UC-529); 5 removed (UC-514/UC-513/UC-512/UC-511/UC-510) (board=geo)</span><br><span class="auto-sync">📌 <b>2026-08-28 auto sync</b>: 2 tickets (incl. linked dev tickets) got new comments; Notes column updated (source: latest Jira comment).</span><br><span class="auto-sync struct-sync">📌 <b>2026-08-26 struct sync</b>: 1 removed (UC-517); field updates 12 (board=geo)</span><br><span class="auto-sync struct-sync">📌 <b>2026-08-25 struct sync</b>: 5 added (UC-521/UC-520/UC-519/UC-518/UC-517) (board=geo)</span><br><span class="auto-sync">📌 <b>2026-08-25 auto sync</b>: 6 tickets (incl. linked dev tickets) got new comments; Notes column updated (source: latest Jira comment).</span><br><span class="auto-sync struct-sync">📌 <b>2026-08-25 struct sync</b>: 5 added (UC-514/UC-513/UC-512/UC-511/UC-510); field updates 19 (board=geo)</span><br><span class="auto-sync">📌 <b>2026-08-25 auto sync</b>: 1 ticket (incl. linked dev tickets) got new comments; Notes column updated (source: latest Jira comment).</span><br><span class="auto-sync">📌 <b>2026-08-24 auto sync</b>: 2 tickets (incl. linked dev tickets) got new comments; Notes column updated (source: latest Jira comment).</span><br>
+  📌 Status basis: Status column prioritizes Dependency Status. Dep=In Progress → In Progress; Dep=To Be Scheduled → ready, awaiting technical scheduling, Scope switched to Dev for tech handover. ★ Added: UC-467/475/477/478/479/480/494; UC-399 P0 (Critical), synced 8/21. 🔧 8/21 structure upgrade: new "Dev Tickets" column (between Dep Scope and Notes); ARISE-1021 linked to UC-405 (attribution logic), ARISE-1154 linked to UC-494 (robots.txt AI crawler blocking) as dev tickets
+</div>
+
+<footer>2026-09-01 · GEO Jira Ticket Master Table (Public) · Source: Jira</footer>
+</div>
+<script>
+(function () {
+  var body = document.getElementById('tocBody');
+  if (!body) return;
+  var nodes = document.querySelectorAll('.goal-card, .epic-card, h2.section-title');
+  var items = [];
+  nodes.forEach(function (el) {
+    if (el.classList.contains('epic-card') && !el.querySelector('.epic-header')) return;
+    var name = el.querySelector('.epic-header .name, .goal-name');
+    var badge = el.querySelector('.epic-header .epic-badge, .goal-badge');
+    var link = el.querySelector('a[href*="browse/"]');
+    var label = name ? name.textContent.replace(/\s+/g, ' ').trim() : '';
+    if (!label) label = el.textContent.replace(/\s+/g, ' ').trim().slice(0, 30);
+    var tk = '';
+    if (badge && /Epic|Goal/i.test(badge.textContent)) tk = badge.textContent.trim();
+    else if (link) { var m = link.href.match(/browse\/([A-Z]+-\d+)/); if (m) tk = m[1]; }
+    if (!el.id) el.id = 'sec' + (items.length + 1);
+    items.push({ id: el.id, label: label.slice(0, 40), tk: tk });
+  });
+  items.forEach(function (it) {
+    var a = document.createElement('a');
+    a.href = '#' + it.id;
+    a.textContent = it.label;
+    if (it.tk) { var s = document.createElement('span'); s.className = 'tk'; s.textContent = it.tk; a.appendChild(s); }
+    body.appendChild(a);
+  });
+  var links = Array.prototype.slice.call(body.querySelectorAll('a'));
+  function onScroll() {
+    var pos = window.scrollY + 100, idx = -1;
+    items.forEach(function (it, i) {
+      var el = document.getElementById(it.id);
+      if (el && el.getBoundingClientRect().top + window.scrollY <= pos) idx = i;
+    });
+    links.forEach(function (l, i) { l.classList.toggle('active', i === idx); });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  links.forEach(function (l) {
+    l.addEventListener('click', function (e) {
+      e.preventDefault();
+      var t = document.getElementById(l.getAttribute('href').slice(1));
+      if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      var toc = document.getElementById('toc');
+      if (toc) toc.classList.remove('open');
+    });
+  });
+  document.getElementById('tocToggle').addEventListener('click', function () {
+    document.getElementById('toc').classList.toggle('open');
+  });
+})();
+</script>
+<script>
+(function () {
+  var doneRows = Array.prototype.slice.call(document.querySelectorAll('tr'))
+    .filter(function (tr) { return tr.querySelector('.status-tag.st-done'); });
+  var btn = document.getElementById('doneToggle');
+  if (!btn) return;
+  if (!doneRows.length) { btn.style.display = 'none'; return; }
+  btn.style.display = 'flex';
+  var open = false;
+  function apply() {
+    doneRows.forEach(function (tr) { tr.classList.toggle('is-done', !open); });
+    btn.textContent = open ? '🙈 Collapse Done (' + doneRows.length + ')' : '✅ Expand Done (' + doneRows.length + ')';
+  }
+  btn.addEventListener('click', function () { open = !open; apply(); });
+  apply();
+})();
+</script>
+</body>
+</html>
